@@ -45,8 +45,11 @@ function tryReload () {
   })
 }
 
+let currentStatus = StatusEnum.IDLE
+
 function updateStatus (status) {
   if (!isStatusInEnum(status)) return
+  
   $('#swu-idle').hide()
   $('#swu-success').hide()
   $('#swu-failure').hide()
@@ -151,11 +154,18 @@ window.onload = function () {
 
     switch (msg.type) {
       case 'message': {
+        // Remove "No messages to display" text when first message arrives
+        const messagesContainer = $('#messages')
+        const noMessagesText = messagesContainer.find('.text-muted.text-center')
+        if (noMessagesText.length > 0) {
+          noMessagesText.remove()
+        }
+        
         const p = $('<p></p>')
         p.text(msg.text)
         p.addClass('mb-1')
         if (msg.level <= 3) { p.addClass('text-danger') }
-        $('#messages').append(p)
+        messagesContainer.append(p)
         break
       }
       case 'status': {
